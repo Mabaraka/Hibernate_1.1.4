@@ -24,8 +24,8 @@ public class UserDaoHibernateImpl implements UserDao {
                 + "lastName VARCHAR(45) NOT NULL,"
                 + "age TINYINT(3) NOT NULL, PRIMARY KEY (id))";
         Transaction transaction = null;
-        try (SessionFactory sf = Util.getSessionFactory();
-             Session session = sf.openSession()) {
+        SessionFactory sf = Util.getSessionFactory();
+        try (Session session = sf.openSession()) {
             transaction = session.beginTransaction();
             session.createSQLQuery(table).executeUpdate();
             session.getTransaction().commit();
@@ -38,6 +38,7 @@ public class UserDaoHibernateImpl implements UserDao {
             }
             System.out.println("createUsersTable error");
         }
+        sf.close();
 
     }
 
@@ -45,8 +46,8 @@ public class UserDaoHibernateImpl implements UserDao {
     public void dropUsersTable() {
         String drop = "DROP TABLE IF EXISTS users;";
         Transaction transaction = null;
-        try (SessionFactory sf = Util.getSessionFactory();
-             Session session = sf.openSession()) {
+        SessionFactory sf = Util.getSessionFactory();
+        try (Session session = sf.openSession()) {
             transaction = session.beginTransaction();
             session.createSQLQuery(drop).executeUpdate();
             session.getTransaction().commit();
@@ -59,13 +60,14 @@ public class UserDaoHibernateImpl implements UserDao {
             }
             System.out.println("dropUsersTable error");
         }
+        sf.close();
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
         Transaction transaction = null;
-        try (SessionFactory sf = Util.getSessionFactory();
-             Session session = sf.openSession()) {
+        SessionFactory sf = Util.getSessionFactory();
+        try (Session session = sf.openSession()) {
             transaction = session.beginTransaction();
             session.save(new User(name, lastName, age));
             session.getTransaction().commit();
@@ -78,13 +80,14 @@ public class UserDaoHibernateImpl implements UserDao {
             }
             System.out.println("saveUser error");
         }
+        sf.close();
     }
 
     @Override
     public void removeUserById(long id) {
         Transaction transaction = null;
-        try (SessionFactory sf = Util.getSessionFactory();
-             Session session = sf.openSession()) {
+        SessionFactory sf = Util.getSessionFactory();
+        try (Session session = sf.openSession()) {
             transaction = session.beginTransaction();
             Query query = session.createQuery("delete User where id = :ID");
             query.setParameter("ID", id);
@@ -99,14 +102,15 @@ public class UserDaoHibernateImpl implements UserDao {
             }
             System.out.println("removeUserById error");
         }
+        sf.close();
     }
 
     @Override
     public List<User> getAllUsers() {
         List<User> result = new ArrayList<>();
         Transaction transaction = null;
-        try (SessionFactory sf = Util.getSessionFactory();
-             Session session = sf.openSession()) {
+        SessionFactory sf = Util.getSessionFactory();
+        try (Session session = sf.openSession()) {
             transaction = session.beginTransaction();
             result = session.createQuery("from User").getResultList();
             session.getTransaction().commit();
@@ -119,6 +123,7 @@ public class UserDaoHibernateImpl implements UserDao {
             }
             System.out.println("getAllUsers error");
         }
+        sf.close();
         return result;
     }
 
@@ -126,8 +131,8 @@ public class UserDaoHibernateImpl implements UserDao {
     public void cleanUsersTable() {
         Transaction transaction = null;
         String delete = "TRUNCATE TABLE users";
-        try (SessionFactory sf = Util.getSessionFactory();
-             Session session = sf.openSession()) {
+        SessionFactory sf = Util.getSessionFactory();
+        try (Session session = sf.openSession()) {
             transaction = session.beginTransaction();
             session.createSQLQuery(delete).executeUpdate();
             session.getTransaction().commit();
@@ -140,5 +145,6 @@ public class UserDaoHibernateImpl implements UserDao {
             }
             System.out.println("cleanUsersTable error");
         }
+        sf.close();
     }
 }
