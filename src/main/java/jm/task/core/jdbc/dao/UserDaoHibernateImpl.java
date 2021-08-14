@@ -5,146 +5,166 @@ import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
-    public UserDaoHibernateImpl() {
-
-    }
 
 
     @Override
-    public void createUsersTable() {
-        String table = "CREATE TABLE IF NOT EXISTS users ("
+    public void createTable() {
+
+        String query = "CREATE TABLE IF NOT EXISTS users_hibernate ("
                 + "id BIGINT NOT NULL AUTO_INCREMENT,"
-                + "name VARCHAR(45) NOT NULL,"
+                + "firstName VARCHAR(45) NOT NULL,"
                 + "lastName VARCHAR(45) NOT NULL,"
                 + "age TINYINT(3) NOT NULL, PRIMARY KEY (id))";
+        SessionFactory sessionFactory = Util.getSessionFactory();
         Transaction transaction = null;
-        SessionFactory sf = Util.getSessionFactory();
-        try (Session session = sf.openSession()) {
+
+        try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery(table).executeUpdate();
+            session.createSQLQuery(query).executeUpdate();
             session.getTransaction().commit();
-        } catch (Throwable e) {
+        } catch (Exception e) {
+
             try {
                 transaction.rollback();
             } catch (Exception exception) {
-                System.out.println("При попытке роллбека произошла ошибка");
                 exception.printStackTrace();
             }
-            System.out.println("createUsersTable error");
-        }
-        sf.close();
 
+            e.printStackTrace();
+        }
+        transaction = null;
+        sessionFactory.close();
     }
 
     @Override
-    public void dropUsersTable() {
-        String drop = "DROP TABLE IF EXISTS users;";
+    public void dropTable() {
+
+        String query = "DROP TABLE IF EXISTS users_hibernate;";
+        SessionFactory sessionFactory = Util.getSessionFactory();
         Transaction transaction = null;
-        SessionFactory sf = Util.getSessionFactory();
-        try (Session session = sf.openSession()) {
+
+        try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery(drop).executeUpdate();
+            session.createSQLQuery(query).executeUpdate();
             session.getTransaction().commit();
-        } catch (Throwable e) {
+        } catch (Exception e) {
+
             try {
                 transaction.rollback();
             } catch (Exception exception) {
-                System.out.println("При попытке роллбека произошла ошибка");
                 exception.printStackTrace();
             }
-            System.out.println("dropUsersTable error");
+
+            e.printStackTrace();
         }
-        sf.close();
+        transaction = null;
+        sessionFactory.close();
     }
 
     @Override
-    public void saveUser(String name, String lastName, byte age) {
+    public void save(String name, String lastName, byte age) {
+
+        SessionFactory sessionFactory = Util.getSessionFactory();
         Transaction transaction = null;
-        SessionFactory sf = Util.getSessionFactory();
-        try (Session session = sf.openSession()) {
+
+        try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             session.save(new User(name, lastName, age));
             session.getTransaction().commit();
-        } catch (Throwable e) {
+        } catch (Exception e) {
+
             try {
                 transaction.rollback();
             } catch (Exception exception) {
-                System.out.println("При попытке роллбека произошла ошибка");
                 exception.printStackTrace();
             }
-            System.out.println("saveUser error");
+
+            e.printStackTrace();
         }
-        sf.close();
+        transaction = null;
+        sessionFactory.close();
     }
 
     @Override
-    public void removeUserById(long id) {
+    public void delete(long id) {
+
+        String query = "delete User where id = :ID";
+        SessionFactory sessionFactory = Util.getSessionFactory();
         Transaction transaction = null;
-        SessionFactory sf = Util.getSessionFactory();
-        try (Session session = sf.openSession()) {
+
+        try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            Query query = session.createQuery("delete User where id = :ID");
-            query.setParameter("ID", id);
-            query.executeUpdate();
+            session.createQuery(query).setParameter("ID", id).executeUpdate();
             session.getTransaction().commit();
-        } catch (Throwable e) {
+        } catch (Exception e) {
+
             try {
                 transaction.rollback();
             } catch (Exception exception) {
-                System.out.println("При попытке роллбека произошла ошибка");
                 exception.printStackTrace();
             }
-            System.out.println("removeUserById error");
+
+            e.printStackTrace();
         }
-        sf.close();
+        transaction = null;
+        sessionFactory.close();
     }
 
     @Override
-    public List<User> getAllUsers() {
-        List<User> result = new ArrayList<>();
+    public List<User> getAll() {
+
+        List<User> userList = new ArrayList<>();
+        String query = "from User";
+        SessionFactory sessionFactory = Util.getSessionFactory();
         Transaction transaction = null;
-        SessionFactory sf = Util.getSessionFactory();
-        try (Session session = sf.openSession()) {
+
+        try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            result = session.createQuery("from User").getResultList();
+            userList = session.createQuery(query).getResultList();
             session.getTransaction().commit();
-        } catch (Throwable e) {
+        } catch (Exception e) {
+
             try {
                 transaction.rollback();
             } catch (Exception exception) {
-                System.out.println("При попытке роллбека произошла ошибка");
                 exception.printStackTrace();
             }
-            System.out.println("getAllUsers error");
+
+            e.printStackTrace();
         }
-        sf.close();
-        return result;
+        transaction = null;
+        sessionFactory.close();
+        return userList;
     }
 
     @Override
-    public void cleanUsersTable() {
+    public void cleanTable() {
+
+        String query = "TRUNCATE TABLE users_hibernate";
+        SessionFactory sessionFactory = Util.getSessionFactory();
         Transaction transaction = null;
-        String delete = "TRUNCATE TABLE users";
-        SessionFactory sf = Util.getSessionFactory();
-        try (Session session = sf.openSession()) {
+
+        try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery(delete).executeUpdate();
+            session.createSQLQuery(query).executeUpdate();
             session.getTransaction().commit();
-        } catch (Throwable e) {
+        } catch (Exception e) {
+
             try {
                 transaction.rollback();
             } catch (Exception exception) {
-                System.out.println("При попытке роллбека произошла ошибка");
                 exception.printStackTrace();
             }
-            System.out.println("cleanUsersTable error");
+
+            e.printStackTrace();
         }
-        sf.close();
+        transaction = null;
+        sessionFactory.close();
     }
+
 }

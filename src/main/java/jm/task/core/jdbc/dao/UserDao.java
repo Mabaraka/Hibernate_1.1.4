@@ -5,15 +5,17 @@ import jm.task.core.jdbc.model.User;
 import java.util.List;
 
 public interface UserDao {
-    void createUsersTable();
 
-    void dropUsersTable();
+    void createTable();
 
-    void saveUser(String name, String lastName, byte age);
+    void dropTable();
 
-    void removeUserById(long id);
+    void save(String name, String lastName, byte age);
 
-    List<User> getAllUsers();
+    void delete(long id);
 
-    void cleanUsersTable();
+    List<User> getAll();
+
+    void cleanTable();
+
 }
